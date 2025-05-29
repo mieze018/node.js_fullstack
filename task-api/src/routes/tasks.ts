@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { prisma } from '../lib/prisma';
 const router = Router();
 
 type Task = {
@@ -7,13 +8,11 @@ type Task = {
 	isDone: boolean;
 };
 
-let tasks: Task[] = [
-	{ id: 1, title: '買い物', isDone: false },
-	{ id: 2, title: '記事執筆', isDone: true },
-];
-
 // GET /tasks
-router.get('/', (_req: Request, res: Response) => {
+router.get('/', async (_req: Request, res: Response): Promise<void> => {
+	const tasks = await prisma.task.findMany({
+		orderBy: { createdAt: 'desc' },
+	});
 	res.json(tasks);
 });
 
