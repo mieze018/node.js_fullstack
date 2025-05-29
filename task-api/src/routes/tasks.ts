@@ -17,7 +17,7 @@ router.get('/', async (_req: Request, res: Response): Promise<void> => {
 });
 
 // POST /tasks
-router.post('/', (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response): Promise<void> => {
 	const { title } = req.body;
 
 	if (typeof title !== 'string' || title.trim() === '') {
@@ -25,14 +25,22 @@ router.post('/', (req: Request, res: Response) => {
 		return;
 	}
 
-	const newTask: Task = {
-		id: Date.now(), // 一旦仮でユニークに
-		title: title.trim(),
-		isDone: false,
-	};
+	try {
+		const newTask = await prisma.task.create({
+			data: {
+				title: title.trim(),
+				user: {
+					connect: { id: 1 }, // 認証導入前なので仮にユーザーID=1で固定
+				},
+			},
+		});
 
-	tasks.push(newTask);
-	res.status(201).json(newTask);
+		res.status(201).json(newTask);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'サーバーエラー' });
+	}
 });
+
 
 export default router;
