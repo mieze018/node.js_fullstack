@@ -8,6 +8,7 @@
     "build": "tsc",
     "dev": "nodemon",
     "dev:debug": "nodemon --exec node --inspect -r ts-node/register src/index.ts",
+    "db:ui": "prisma studio",
     "db:migrate": "prisma migrate dev --name init"
   },
   "keywords": [],
